@@ -1,6 +1,6 @@
 {
   "name": "playlist_scraper_ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,6 +13,9 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
+    "@mui/x-charts": "^7.1.1",
+    "@mui/x-data-grid": "^7.1.1",
+    "@mui/x-data-grid-pro": "^7.1.1",
     "next": "14.1.4",
     "react": "^18",
     "react-dom": "^18"
