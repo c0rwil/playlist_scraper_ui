@@ -8,22 +8,7 @@ import DisplayComponent from "@/components/CodeGrimoire";
 export default function HomePage() {
     return (
         <Box sx={{ display: 'flex' }}>
-            <div>
-                {/*    This app uses the Next.js App Router and Material UI v5.*/}
-                <Grid container rowSpacing={3} columnSpacing={3}>
-                    <Grid xs={"auto"}>
-                        <MediaCard
-                            heading="resume"
-                            text="pdf of my resume."
-                            pdfUrl="/resume.pdf"
-                        />
-                        <EmailPopup />
-                    </Grid>
-                </Grid>
-            </div>
-            <div style = {{marginLeft:"10%"}}>
-                <DisplayComponent/>
-            </div>
+
         </Box>
     );
 }
