@@ -42,11 +42,12 @@ export default function HomePage() {
                 <Grid item xs={12} md={6}>
                     <Paper elevation={3} sx={{ padding: 10 }}>
                         <Typography>
-                            Top Artists
+                            Playlists
                         </Typography>
                         <PlaylistsDataGrid endpoint={"/api/playlists"} />
                     </Paper>
                 </Grid>
+
 
                 {/* Pie Chart */}
                 <Grid item xs={12} md={12}>

@@ -1,53 +1,52 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import {NextResponse} from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
-let cache = {
-    data: null,
-    lastFetch: 0,
+type Cache = {
+    data: any;
+    lastFetch: number;
 };
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+let cache: Cache = {
+    data: null,
+    lastFetch: 0
+};
 
+export async function GET(request: NextRequest) {
+    // Check for session_id
+    const sessionId = request.cookies.get('session_id')?.value;
+    if (!sessionId) {
+        return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    // In-memory cache check
+    const currentTime = Date.now();
+    const thirtyMinutes = 30 * 60 * 1000; // 30 min in ms
+
+    if (cache.data && currentTime - cache.lastFetch < thirtyMinutes) {
+        // Still fresh; return cached data
+        return NextResponse.json(cache.data);
+    }
+
+    // Otherwise, fetch from FastAPI
     try {
-        const currentTime = Date.now();
-        const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
-        if (currentTime - cache.lastFetch < twentyFourHours && cache.data) {
-            return new NextResponse(JSON.stringify(cache.data), {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-        }
-
-        const spotifyApiUrl = 'http://localhost:5510/playlists'; // Your FastAPI endpoint for top artists
-        const response = await fetch(spotifyApiUrl, {
+        const res = await fetch(`http://localhost:5510/playlists?session_id=${sessionId}`, {
             method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
+            headers: { Accept: 'application/json' }
         });
 
-        if (response.status === 200) {
-            const data = await response.json();
-            cache = { data, lastFetch: currentTime };
-            return new NextResponse(JSON.stringify(data), {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-        } else {
-            // Handle non-200 responses from the FastAPI server
-            return new NextResponse(null, { status: response.status });
+        if (!res.ok) {
+            // Forward the error status
+            return NextResponse.json({ error: 'Failed to fetch from FastAPI' }, { status: res.status });
         }
+
+        const data = await res.json();
+
+        // Store in local cache
+        cache = { data, lastFetch: currentTime };
+
+        // Return JSON
+        return NextResponse.json(data);
     } catch (error) {
-        console.error('Error when fetching:', error);
-        return new NextResponse(JSON.stringify({ error: 'Internal Server Error' }), {
-            status: 500,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });    }
+        console.error('Error fetching from FastAPI:', error);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    }
 }

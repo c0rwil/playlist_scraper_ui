@@ -27,6 +27,7 @@ const DRAWER_WIDTH = 240;
 const LINKS = [
   { text: 'Home', href: '/', icon: HomeIcon },
   { text: 'login', href: '/login', icon: StarIcon },
+    { text: 'logout', href: '/logout', icon: StarIcon}
 ];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
